@@ -1,0 +1,5 @@
+# Defense in depth: config.php already returns nothing if requested
+# directly (see db.php), but block it at the server level too.
+<Files "config.php">
+    Require all denied
+</Files>
