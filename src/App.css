@@ -552,3 +552,121 @@ label {
   color: white;
   border-color: #7f1d1d;
 }
+
+.modal-card-wide {
+  max-width: 720px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.csv-import-modal h2,
+.csv-import-modal p {
+  text-align: left;
+}
+
+.csv-import-modal .form-actions {
+  justify-content: flex-start;
+}
+
+.csv-import-instructions,
+.ai-prompt-box,
+.csv-file-picker,
+.csv-preview {
+  margin-bottom: 20px;
+}
+
+.csv-format-table-wrapper,
+.csv-preview-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.csv-format-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.csv-format-table th, .csv-format-table td {
+  border: 1px solid var(--color-border);
+  padding: 6px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.csv-format-table th {
+  background: var(--color-bg);
+}
+
+.csv-format-notes {
+  font-size: 0.85rem;
+  padding-left: 20px;
+  margin: 0 0 16px;
+}
+
+.csv-format-notes li {
+  margin-bottom: 4px;
+}
+
+.ai-prompt-box {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.ai-prompt-text {
+  white-space: pre-wrap;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 0 0 12px;
+}
+
+.csv-preview-table {
+  font-size: 0.85rem;
+}
+
+.csv-row-error {
+  background: #fef2f2;
+}
+
+.csv-status-ok {
+  color: #15803d;
+}
+
+.csv-status-error {
+  color: var(--color-error);
+}
+
+.admin-quiz-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-quiz-editor-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.quiz-title-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz-title-form input {
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 4px 8px;
+}

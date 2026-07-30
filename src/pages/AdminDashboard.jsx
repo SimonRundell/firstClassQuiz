@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createQuiz, listQuizzes, updateQuiz, deleteQuiz } from '../api/quizzes';
 import { useConfirm } from '../context/ConfirmContext';
+import { useAlert } from '../context/AlertContext';
 
 /** Lists all quizzes with create / activate-toggle / delete controls. */
 export default function AdminDashboard() {
   const confirm = useConfirm();
+  const alert = useAlert();
   const [quizzes, setQuizzes] = useState([]);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,10 @@ export default function AdminDashboard() {
 
   async function handleCreate(e) {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      await alert('Please enter a title for the new quiz.', { title: 'Title required' });
+      return;
+    }
     await createQuiz({ title: title.trim() });
     setTitle('');
     await refresh();

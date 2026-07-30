@@ -72,6 +72,12 @@ export async function deleteQuestion(id) {
   return (await client.delete(`/questions.php?id=${id}`)).data;
 }
 
+/** @param {number} quizId @param {Array<Object>} rows @returns {Promise<{setsCreated: number, questionsCreated: number}>} */
+export async function importQuestions(quizId, rows) {
+  const client = await getClient();
+  return (await client.post('/questions_import.php', { quizId, rows })).data;
+}
+
 /** @param {string} token @returns {Promise<Object>} */
 export async function fetchPublicQuiz(token) {
   const client = await getClient();

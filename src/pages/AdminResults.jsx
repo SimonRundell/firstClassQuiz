@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchResults } from '../api/results';
 import { listQuizzes } from '../api/quizzes';
 import { stripHtml } from '../utils/html';
+import { formatDateTime } from '../utils/formatDate';
 
 /** @param {Object} response */
 function formatAnswer(response) {
@@ -21,7 +22,7 @@ function toCsv(quizTitle, submissions) {
         : r.type === 'likert'
           ? String(r.answer.value ?? '')
           : (r.answer.selected || []).join('; ');
-      rows.push([s.firstName, s.lastName, s.collegeEmail, s.submittedAt, r.setTitle, stripHtml(r.prompt), answerText]);
+      rows.push([s.firstName, s.lastName, s.collegeEmail, formatDateTime(s.submittedAt), r.setTitle, stripHtml(r.prompt), answerText]);
     });
   });
   return rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
@@ -69,7 +70,7 @@ export default function AdminResults() {
           <h3>
             {submission.firstName} {submission.lastName} &lt;{submission.collegeEmail}&gt;
           </h3>
-          <p className="submission-timestamp">{new Date(submission.submittedAt).toLocaleString()}</p>
+          <p className="submission-timestamp">{formatDateTime(submission.submittedAt)}</p>
           <table className="admin-table">
             <thead>
               <tr>

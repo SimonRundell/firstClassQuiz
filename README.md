@@ -39,7 +39,11 @@ Vite serving the React frontend on its own dev port.
 
 4. **Frontend config** - edit `public/config.json` so `apiBaseUrl` points at
    wherever Laragon serves the `api/` folder for this project, e.g.
-   `http://localhost/firstClassQuiz/api`.
+   `http://localhost/firstClassQuiz/api`. It also takes an optional
+   `dateTimeFormat` (used for submission timestamps on the results page and
+   in the CSV export), which defaults to `dd/MM/yyyy hh:mm:ss a` (e.g.
+   `30/07/2026 02:15:30 PM`). Supported tokens: `yyyy`, `MM`, `dd`, `HH`
+   (24-hour), `hh` (12-hour), `mm`, `ss`, `a` (AM/PM).
 
 5. **Install and run**:
 

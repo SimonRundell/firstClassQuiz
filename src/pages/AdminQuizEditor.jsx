@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import {
   listQuizzes,
+  updateQuiz,
   listQuestionSets,
   createQuestionSet,
   updateQuestionSet,
@@ -15,6 +18,7 @@ import {
 } from '../api/quizzes';
 import QuestionEditorForm from '../components/admin/QuestionEditorForm';
 import SortableQuestionRow from '../components/admin/SortableQuestionRow';
+import CsvImportModal from '../components/admin/CsvImportModal';
 import { useConfirm } from '../context/ConfirmContext';
 
 /** Keeps drag movement to the vertical axis of the question list. */
@@ -34,6 +38,9 @@ export default function AdminQuizEditor() {
   const [newSetTitle, setNewSetTitle] = useState('');
   const [addingQuestionToSet, setAddingQuestionToSet] = useState(null);
   const [editingQuestion, setEditingQuestion] = useState(null);
+  const [showCsvImport, setShowCsvImport] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState('');
 
   async function refresh() {
     const quizzes = await listQuizzes();
@@ -51,6 +58,20 @@ export default function AdminQuizEditor() {
     refresh();
   }, [quizId]);
   /* eslint-enable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect */
+
+  function startEditingTitle() {
+    setTitleDraft(quiz.title);
+    setIsEditingTitle(true);
+  }
+
+  async function handleSaveTitle(e) {
+    e.preventDefault();
+    const trimmed = titleDraft.trim();
+    if (!trimmed) return;
+    await updateQuiz(quizId, { title: trimmed, description: quiz.description, isActive: quiz.isActive });
+    setIsEditingTitle(false);
+    await refresh();
+  }
 
   async function handleAddSet(e) {
     e.preventDefault();
@@ -119,7 +140,35 @@ export default function AdminQuizEditor() {
   return (
     <div className="admin-quiz-editor">
       <p><Link to="/admin" className="button-link">&larr; Back to quizzes</Link></p>
-      <h1>{quiz.title}</h1>
+      <div className="admin-quiz-editor-header">
+        {isEditingTitle ? (
+          <form className="quiz-title-form" onSubmit={handleSaveTitle}>
+            <input
+              value={titleDraft}
+              onChange={(e) => setTitleDraft(e.target.value)}
+              autoFocus
+            />
+            <button type="submit">Save</button>
+            <button type="button" onClick={() => setIsEditingTitle(false)}>Cancel</button>
+          </form>
+        ) : (
+          <h1>
+            {quiz.title}
+            <button type="button" className="icon-button" title="Rename quiz" onClick={startEditingTitle}>
+              <FontAwesomeIcon icon={faPen} />
+            </button>
+          </h1>
+        )}
+        <button type="button" onClick={() => setShowCsvImport(true)}>Import questions from CSV</button>
+      </div>
+
+      {showCsvImport && (
+        <CsvImportModal
+          quizId={quizId}
+          onImported={refresh}
+          onClose={() => setShowCsvImport(false)}
+        />
+      )}
 
       {sets.map((set, setIndex) => (
         <section key={set.id} className="editor-set">

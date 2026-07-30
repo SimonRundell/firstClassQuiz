@@ -7,8 +7,9 @@ import { useEffect } from 'react';
  * @param {Object} props
  * @param {import('react').ReactNode} props.children
  * @param {() => void} props.onClose
+ * @param {string} [props.className] - extra class(es) on the card, e.g. for a wider modal
  */
-export default function Modal({ children, onClose }) {
+export default function Modal({ children, onClose, className = '' }) {
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.key === 'Escape') onClose();
@@ -19,7 +20,7 @@ export default function Modal({ children, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className={`modal-card ${className}`} onClick={(e) => e.stopPropagation()}>
         <img src="/exeter-college-black-text.png" alt="Exeter College" className="modal-logo" />
         {children}
       </div>
