@@ -300,6 +300,15 @@ label, .field {
   align-items: center;
 }
 
+.choice-option-row input {
+  flex: 1;
+}
+
+.choice-config .add-option-button {
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
 .form-actions {
   display: flex;
   gap: 8px;

@@ -111,6 +111,15 @@ php api/setup/migrate_table_prefix.php
 
 <!-- markdownlint-disable MD024 -->
 
+### [1.6.3] - 2026-07-31
+
+#### Fixed
+
+- Multiple-choice option text fields in the question editor now stretch
+  to fill the available width instead of a fixed narrow default, and
+  "Add option" has proper spacing above and below it instead of sitting
+  flush against the option list and the Save/Cancel buttons.
+
 ### [1.6.2] - 2026-07-31
 
 #### Added

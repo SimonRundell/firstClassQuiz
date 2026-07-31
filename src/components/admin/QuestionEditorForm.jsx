@@ -125,7 +125,7 @@ export default function QuestionEditorForm({ initialQuestion, onSave, onCancel }
               </button>
             </div>
           ))}
-          <button type="button" onClick={addOption}>Add option</button>
+          <button type="button" className="add-option-button" onClick={addOption}>Add option</button>
         </div>
       )}
 
