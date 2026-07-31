@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchResults } from '../api/results';
+import { fetchResults, deleteResults } from '../api/results';
 import { listQuizzes } from '../api/quizzes';
 import { stripHtml } from '../utils/html';
 import { formatDateTime } from '../utils/formatDate';
+import DeleteResultsModal from '../components/admin/DeleteResultsModal';
 
 /** @param {Object} response */
 function formatAnswer(response) {
@@ -35,14 +36,20 @@ export default function AdminResults() {
   const [quiz, setQuiz] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  useEffect(() => {
-    Promise.all([listQuizzes(), fetchResults(quizId)]).then(([quizzes, results]) => {
+  function refresh() {
+    return Promise.all([listQuizzes(), fetchResults(quizId)]).then(([quizzes, results]) => {
       setQuiz(quizzes.find((q) => q.id === quizId) || null);
       setSubmissions(results);
-      setLoading(false);
     });
+  }
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    refresh().finally(() => setLoading(false));
   }, [quizId]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   function handleExport() {
     const csv = toCsv(quiz?.title || 'quiz', submissions);
@@ -55,13 +62,38 @@ export default function AdminResults() {
     URL.revokeObjectURL(url);
   }
 
+  async function handleDeleteResults() {
+    await deleteResults(quizId);
+    await refresh();
+  }
+
   if (loading) return <div className="page-message">Loading...</div>;
 
   return (
     <div className="admin-results">
       <p><Link to="/admin" className="button-link">&larr; Back to quizzes</Link></p>
       <h1>{quiz?.title} - Results</h1>
-      <button className="smallgapbelow" type="button" onClick={handleExport} disabled={submissions.length === 0}>Export CSV</button>
+      <div className="results-actions">
+        <button type="button" onClick={handleExport} disabled={submissions.length === 0}>Export CSV</button>
+        <button
+          type="button"
+          className="danger-button"
+          onClick={() => setShowDeleteModal(true)}
+          disabled={submissions.length === 0}
+        >
+          Delete all results
+        </button>
+      </div>
+
+      {showDeleteModal && (
+        <DeleteResultsModal
+          quizTitle={quiz?.title || 'this quiz'}
+          submissionCount={submissions.length}
+          onExportCsv={handleExport}
+          onConfirmDelete={handleDeleteResults}
+          onClose={() => setShowDeleteModal(false)}
+        />
+      )}
 
       {submissions.length === 0 && <p>No submissions yet.</p>}
 

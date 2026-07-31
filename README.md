@@ -111,6 +111,19 @@ php api/setup/migrate_table_prefix.php
 
 <!-- markdownlint-disable MD024 -->
 
+### [1.6.2] - 2026-07-31
+
+#### Added
+
+- "Delete all results" on the results page, for clearing submissions
+  between classes sitting the same quiz. A confirmation dialog requires
+  explicitly acknowledging - via a switch - that a CSV copy has been
+  exported or isn't needed before the delete button becomes clickable,
+  with an "Export CSV first" button right there in the same dialog.
+  Only that quiz's submissions and their answers are removed; the quiz,
+  its sets, and its questions are untouched, so the same link/code can
+  be reused straight away for the next class.
+
 ### [1.6.1] - 2026-07-31
 
 #### Added

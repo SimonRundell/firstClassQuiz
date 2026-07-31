@@ -1,9 +1,12 @@
 <?php
 /**
- * GET /api/results.php?quiz_id=
- *
- * Returns every submission for a quiz, each with its responses nested
- * and joined against the question they answer (prompt, type, set).
+ * GET    /api/results.php?quiz_id= - every submission for a quiz, each
+ *        with its responses nested and joined against the question
+ *        they answer (prompt, type, set).
+ * DELETE /api/results.php?quiz_id= - permanently deletes every
+ *        submission (and, via ON DELETE CASCADE, every response) for
+ *        that quiz. Used to clear results between classes sitting the
+ *        same quiz. Does not touch the quiz, its sets, or its questions.
  *
  * Requires an authenticated admin.
  */
@@ -16,6 +19,12 @@ $quizId = (int)($_GET['quiz_id'] ?? 0);
 
 if (!$quizId) {
     json_response(['error' => 'quiz_id is required'], 400);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $stmt = $db->prepare('DELETE FROM firstclassquiz_submissions WHERE quiz_id = ?');
+    $stmt->execute([$quizId]);
+    json_response(['ok' => true, 'deleted' => $stmt->rowCount()]);
 }
 
 $stmt = $db->prepare(
