@@ -7,7 +7,7 @@ import { formatDateTime } from '../utils/formatDate';
 
 /** @param {Object} response */
 function formatAnswer(response) {
-  if (response.type === 'text') return <span dangerouslySetInnerHTML={{ __html: response.answer.html || '' }} />;
+  if (response.type === 'text') return <span className="rich-html-content" dangerouslySetInnerHTML={{ __html: response.answer.html || '' }} />;
   if (response.type === 'likert') return response.answer.value ?? '';
   if (response.type === 'choice') return (response.answer.selected || []).join(', ');
   return '';
@@ -83,7 +83,7 @@ export default function AdminResults() {
               {submission.responses.map((response) => (
                 <tr key={response.questionId}>
                   <td>{response.setTitle}</td>
-                  <td dangerouslySetInnerHTML={{ __html: response.prompt }} />
+                  <td className="rich-html-content" dangerouslySetInnerHTML={{ __html: response.prompt }} />
                   <td>{formatAnswer(response)}</td>
                 </tr>
               ))}

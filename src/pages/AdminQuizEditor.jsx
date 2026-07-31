@@ -20,6 +20,7 @@ import QuestionEditorForm from '../components/admin/QuestionEditorForm';
 import SortableQuestionRow from '../components/admin/SortableQuestionRow';
 import CsvImportModal from '../components/admin/CsvImportModal';
 import { useConfirm } from '../context/ConfirmContext';
+import { useAlert } from '../context/AlertContext';
 
 /** Keeps drag movement to the vertical axis of the question list. */
 function restrictToVerticalAxis({ transform }) {
@@ -32,6 +33,7 @@ export default function AdminQuizEditor() {
   const quizId = Number(id);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const confirm = useConfirm();
+  const alert = useAlert();
 
   const [quiz, setQuiz] = useState(null);
   const [sets, setSets] = useState([]);
@@ -41,6 +43,8 @@ export default function AdminQuizEditor() {
   const [showCsvImport, setShowCsvImport] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
+  const [editingSetId, setEditingSetId] = useState(null);
+  const [editSetTitleDraft, setEditSetTitleDraft] = useState('');
 
   async function refresh() {
     const quizzes = await listQuizzes();
@@ -75,9 +79,26 @@ export default function AdminQuizEditor() {
 
   async function handleAddSet(e) {
     e.preventDefault();
-    if (!newSetTitle.trim()) return;
+    if (!newSetTitle.trim()) {
+      await alert('Please enter a title for the new set.', { title: 'Title required' });
+      return;
+    }
     await createQuestionSet({ quizId, title: newSetTitle.trim() });
     setNewSetTitle('');
+    await refresh();
+  }
+
+  function startEditingSetTitle(set) {
+    setEditSetTitleDraft(set.title);
+    setEditingSetId(set.id);
+  }
+
+  async function handleSaveSetTitle(e, set) {
+    e.preventDefault();
+    const trimmed = editSetTitleDraft.trim();
+    if (!trimmed) return;
+    await updateQuestionSet(set.id, { title: trimmed, sortOrder: set.sortOrder });
+    setEditingSetId(null);
     await refresh();
   }
 
@@ -173,7 +194,24 @@ export default function AdminQuizEditor() {
       {sets.map((set, setIndex) => (
         <section key={set.id} className="editor-set">
           <div className="editor-set-header">
-            <h2>{set.title}</h2>
+            {editingSetId === set.id ? (
+              <form className="quiz-title-form" onSubmit={(e) => handleSaveSetTitle(e, set)}>
+                <input
+                  value={editSetTitleDraft}
+                  onChange={(e) => setEditSetTitleDraft(e.target.value)}
+                  autoFocus
+                />
+                <button type="submit">Save</button>
+                <button type="button" onClick={() => setEditingSetId(null)}>Cancel</button>
+              </form>
+            ) : (
+              <h2>
+                {set.title}
+                <button type="button" className="icon-button" title="Rename set" onClick={() => startEditingSetTitle(set)}>
+                  <FontAwesomeIcon icon={faPen} />
+                </button>
+              </h2>
+            )}
             <div className="reorder-controls">
               <button type="button" onClick={() => moveSet(set, -1)} disabled={setIndex === 0}>&uarr;</button>
               <button type="button" onClick={() => moveSet(set, 1)} disabled={setIndex === sets.length - 1}>&darr;</button>

@@ -78,6 +78,25 @@ export async function importQuestions(quizId, rows) {
   return (await client.post('/questions_import.php', { quizId, rows })).data;
 }
 
+/** @param {string} query @returns {Promise<number[]>} quiz ids with a matching question prompt */
+export async function searchQuestionQuizIds(query) {
+  const client = await getClient();
+  return (await client.get(`/search_questions.php?q=${encodeURIComponent(query)}`)).data;
+}
+
+/** @param {number[]} [ids] omit or pass empty for every quiz @returns {Promise<{exportedAt: string, quizzes: Array<Object>}>} */
+export async function exportQuizzes(ids) {
+  const client = await getClient();
+  const query = ids && ids.length ? `?ids=${ids.join(',')}` : '';
+  return (await client.get(`/quizzes_export.php${query}`)).data;
+}
+
+/** @param {Array<Object>} quizzes @returns {Promise<{quizzesCreated: number, setsCreated: number, questionsCreated: number}>} */
+export async function importQuizzes(quizzes) {
+  const client = await getClient();
+  return (await client.post('/quizzes_import.php', { quizzes })).data;
+}
+
 /** @param {string} token @returns {Promise<Object>} */
 export async function fetchPublicQuiz(token) {
   const client = await getClient();

@@ -72,10 +72,13 @@ export default function QuestionEditorForm({ initialQuestion, onSave, onCancel }
         </select>
       </label>
 
-      <label>
+      {/* Not a <label> - it would wrap the toolbar's buttons, and browsers
+          forward clicks anywhere in a label to its first labelable child
+          (the Undo button), silently firing undo on every click. */}
+      <div className="field">
         Prompt
         <RichTextEditor value={prompt} onChange={setPrompt} />
-      </label>
+      </div>
 
       <label className="checkbox-label">
         <input type="checkbox" checked={required} onChange={(e) => setRequired(e.target.checked)} />
