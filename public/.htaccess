@@ -1,0 +1,18 @@
+# SPA fallback so client-side routes (react-router) survive a hard
+# load / refresh / direct link, e.g. /quiz/A5LZQR
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Leave the PHP API alone
+    RewriteCond %{REQUEST_URI} ^/api/ [NC]
+    RewriteRule ^ - [L]
+
+    # Serve real files and directories as-is (JS/CSS/images, etc.)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Everything else is a client-side route - hand it to the app
+    RewriteRule ^ index.html [L]
+</IfModule>
