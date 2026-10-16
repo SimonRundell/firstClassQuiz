@@ -10,6 +10,8 @@
  *
  * @return PDO
  */
+require_once __DIR__ . '/lib/log.php';
+
 function get_db()
 {
     static $pdo = null;

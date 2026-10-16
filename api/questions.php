@@ -17,6 +17,7 @@
 require_once __DIR__ . '/cors.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/require_admin.php';
+require_once __DIR__ . '/lib/sanitize.php';
 
 $db = get_db();
 $method = $_SERVER['REQUEST_METHOD'];
@@ -53,7 +54,7 @@ if ($method === 'POST') {
     $body = json_body();
     $setId = (int)($body['setId'] ?? 0);
     $type = $body['type'] ?? '';
-    $prompt = $body['prompt'] ?? '';
+    $prompt = sanitize_html($body['prompt'] ?? '');
 
     if (!$setId || !in_array($type, $validTypes, true) || trim(strip_tags($prompt)) === '') {
         json_response(['error' => 'setId, a valid type, and prompt are required'], 400);
@@ -90,7 +91,7 @@ if ($method === 'PUT') {
     );
     $stmt->execute([
         $body['type'] ?? 'text',
-        trim($body['prompt'] ?? ''),
+        sanitize_html(trim($body['prompt'] ?? '')),
         !empty($body['required']) ? 1 : 0,
         json_encode($body['config'] ?? new stdClass()),
         (int)($body['sortOrder'] ?? 0),

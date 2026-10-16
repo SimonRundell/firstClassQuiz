@@ -2,15 +2,29 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchResults, deleteResults } from '../api/results';
 import { listQuizzes } from '../api/quizzes';
-import { stripHtml } from '../utils/html';
+import { stripHtml, sanitizeHtml } from '../utils/html';
 import { formatDateTime } from '../utils/formatDate';
 import DeleteResultsModal from '../components/admin/DeleteResultsModal';
 
+/**
+ * Formats stored 0-based option indices as 1-based numbers with the option
+ * text (e.g. "1: Biology"), where 1 is the first option as listed in the
+ * import CSV's Options column.
+ *
+ * @param {number[]} [selected]
+ * @param {string[]} [options]
+ * @param {string} separator
+ * @returns {string}
+ */
+function optionNumbers(selected, options, separator) {
+  return (selected || []).map((i) => `${i + 1}: ${(options || [])[i] ?? ''}`.trim()).join(separator);
+}
+
 /** @param {Object} response */
 function formatAnswer(response) {
-  if (response.type === 'text') return <span className="rich-html-content" dangerouslySetInnerHTML={{ __html: response.answer.html || '' }} />;
+  if (response.type === 'text') return <span className="rich-html-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(response.answer.html) }} />;
   if (response.type === 'likert') return response.answer.value ?? '';
-  if (response.type === 'choice') return (response.answer.selected || []).join(', ');
+  if (response.type === 'choice') return optionNumbers(response.answer.selected, response.options, ', ');
   return '';
 }
 
@@ -22,7 +36,7 @@ function toCsv(quizTitle, submissions) {
         ? stripHtml(r.answer.html)
         : r.type === 'likert'
           ? String(r.answer.value ?? '')
-          : (r.answer.selected || []).join('; ');
+          : optionNumbers(r.answer.selected, r.options, '; ');
       rows.push([s.firstName, s.lastName, s.collegeEmail, formatDateTime(s.submittedAt), r.setTitle, stripHtml(r.prompt), answerText]);
     });
   });
@@ -115,7 +129,7 @@ export default function AdminResults() {
               {submission.responses.map((response) => (
                 <tr key={response.questionId}>
                   <td>{response.setTitle}</td>
-                  <td className="rich-html-content" dangerouslySetInnerHTML={{ __html: response.prompt }} />
+                  <td className="rich-html-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(response.prompt) }} />
                   <td>{formatAnswer(response)}</td>
                 </tr>
               ))}

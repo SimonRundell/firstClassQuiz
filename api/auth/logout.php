@@ -6,9 +6,9 @@
  */
 require_once __DIR__ . '/../cors.php';
 require_once __DIR__ . '/../lib/response.php';
+require_once __DIR__ . '/../lib/session.php';
 
-ini_set('session.cookie_samesite', 'Lax');
-session_start();
+start_admin_session();
 $_SESSION = [];
 session_destroy();
 

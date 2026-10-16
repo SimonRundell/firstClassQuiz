@@ -1,3 +1,4 @@
+import { sanitizeHtml } from '../../utils/html';
 import TextQuestion from './TextQuestion';
 import LikertQuestion from './LikertQuestion';
 import ChoiceQuestion from './ChoiceQuestion';
@@ -17,7 +18,7 @@ export default function QuestionRenderer({ question, answer, onChange }) {
   return (
     <div className="question-block">
       <div className="question-prompt">
-        <div className="question-prompt-html" dangerouslySetInnerHTML={{ __html: question.prompt }} />
+        <div className="question-prompt-html" dangerouslySetInnerHTML={{ __html: sanitizeHtml(question.prompt) }} />
         {question.required && <span className="required-marker">(required)</span>}
       </div>
 

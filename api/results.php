@@ -34,7 +34,7 @@ $stmt->execute([$quizId]);
 $submissions = $stmt->fetchAll();
 
 $responseStmt = $db->prepare(
-    'SELECT r.question_id, r.answer, q.prompt, q.type, q.set_id, s.title AS set_title
+    'SELECT r.question_id, r.answer, q.prompt, q.type, q.config, q.set_id, s.title AS set_title
      FROM firstclassquiz_responses r
      JOIN firstclassquiz_questions q ON q.id = r.question_id
      JOIN firstclassquiz_question_sets s ON s.id = q.set_id
@@ -58,6 +58,7 @@ $result = array_map(function ($submission) use ($responseStmt) {
                 'prompt' => $row['prompt'],
                 'type' => $row['type'],
                 'answer' => json_decode($row['answer'], true),
+                'options' => json_decode($row['config'], true)['options'] ?? [],
             ];
         }, $responseStmt->fetchAll()),
     ];

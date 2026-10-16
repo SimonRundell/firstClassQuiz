@@ -3,3 +3,8 @@
 <Files "config.php">
     Require all denied
 </Files>
+
+# Error log and login-throttle state live in logs/
+<FilesMatch "\.(log|json)$">
+    Require all denied
+</FilesMatch>

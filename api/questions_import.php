@@ -13,6 +13,7 @@
 require_once __DIR__ . '/cors.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/require_admin.php';
+require_once __DIR__ . '/lib/sanitize.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_response(['error' => 'Method not allowed'], 405);
@@ -56,7 +57,7 @@ try {
     foreach ($rows as $row) {
         $setTitle = trim($row['setTitle'] ?? '');
         $type = $row['type'] ?? '';
-        $prompt = $row['prompt'] ?? '';
+        $prompt = sanitize_html($row['prompt'] ?? '');
 
         if ($setTitle === '' || !in_array($type, $validTypes, true) || trim(strip_tags($prompt)) === '') {
             throw new InvalidArgumentException('setTitle, a valid type, and prompt are required for every row.');
@@ -92,6 +93,7 @@ try {
     $db->commit();
 } catch (Exception $e) {
     $db->rollBack();
+    log_error('Question import failed: ' . $e->getMessage());
     json_response(['error' => 'Import failed: ' . $e->getMessage()], 400);
 }
 

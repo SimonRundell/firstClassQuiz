@@ -111,6 +111,39 @@ php api/setup/migrate_table_prefix.php
 
 <!-- markdownlint-disable MD024 -->
 
+### [1.6.4] - 2026-10-16
+
+#### Changed
+
+- Choice answers on the results page and in the results CSV are now shown
+  as 1-based option numbers with the option text (e.g. `1: Biology`),
+  where 1 is the first option in the order of the import CSV's Options
+  column, instead of raw 0-based indices.
+
+#### Security
+
+- Rich text (question prompts and students' free-text answers) is now
+  sanitised with an allowlist both on the server (`api/lib/sanitize.php`,
+  before saving, including imports) and in the browser (DOMPurify, before
+  rendering), closing a stored XSS hole on the results page.
+- Login is rate limited (5 failures per 15 minutes per IP and per
+  username), regenerates the session ID on success, and the session
+  cookie is now HttpOnly (and Secure over HTTPS).
+- `submit.php` checks every answer against the quiz's real questions:
+  unknown questions, out-of-range scale values, invalid or surplus choice
+  options and over-long text are rejected, and required questions are
+  enforced server-side. Name and email lengths are capped.
+
+#### Added
+
+- Error log at `api/logs/error.log` (git-ignored, blocked from HTTP by
+  `api/.htaccess`), also capturing uncaught exceptions and PHP errors,
+  which are no longer displayed to the client.
+
+#### Removed
+
+- Unused `playwright` dev dependency.
+
 ### [1.6.3] - 2026-07-31
 
 #### Fixed

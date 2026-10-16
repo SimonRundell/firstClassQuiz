@@ -14,6 +14,7 @@
 require_once __DIR__ . '/cors.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/require_admin.php';
+require_once __DIR__ . '/lib/sanitize.php';
 require_once __DIR__ . '/lib/token.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -78,7 +79,7 @@ try {
 
             foreach (array_values($questions) as $questionIndex => $question) {
                 $type = $question['type'] ?? '';
-                $prompt = $question['prompt'] ?? '';
+                $prompt = sanitize_html($question['prompt'] ?? '');
 
                 if (!in_array($type, $validTypes, true) || trim(strip_tags($prompt)) === '') {
                     throw new InvalidArgumentException('Every question needs a valid type and a non-empty prompt.');
@@ -99,6 +100,7 @@ try {
 
     $db->commit();
 } catch (Exception $e) {
+    log_error('Quiz import failed: ' . $e->getMessage());
     $db->rollBack();
     json_response(['error' => 'Import failed: ' . $e->getMessage()], 400);
 }

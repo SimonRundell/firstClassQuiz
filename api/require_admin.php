@@ -7,9 +7,9 @@
  * no admin is logged in. On success, $_SESSION['admin_id'] is available.
  */
 require_once __DIR__ . '/lib/response.php';
+require_once __DIR__ . '/lib/session.php';
 
-ini_set('session.cookie_samesite', 'Lax');
-session_start();
+start_admin_session();
 
 if (empty($_SESSION['admin_id'])) {
     json_response(['error' => 'Not authenticated'], 401);
