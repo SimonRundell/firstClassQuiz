@@ -13,8 +13,8 @@ dist-ssr
 *.local
 
 # PHP API secrets
-api/config.php
-api/config.live.php
+api/.config.json
+api/.config.live.json
 
 #Data
 firstclassquiz_backup.sql

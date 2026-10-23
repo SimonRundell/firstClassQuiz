@@ -26,7 +26,7 @@ export async function fetchCurrentAdmin() {
   const client = await getClient();
   try {
     const res = await client.get('/auth/me.php');
-    return res.data;
+    return res.data.authenticated === false ? null : res.data;
   } catch {
     return null;
   }

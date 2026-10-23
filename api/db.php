@@ -2,11 +2,9 @@
 /**
  * db.php
  *
- * Reads DB credentials from config.php (git-ignored; copy from
- * config.example.php) and returns a shared PDO connection. Credentials
- * live in a .php file (returning a plain array) rather than a .json file
- * so a direct HTTP request to it executes as PHP and returns nothing,
- * instead of the web server serving the raw secrets as static text.
+ * Reads DB credentials from api/.config.json (git-ignored; copy from
+ * .config.example.json) and returns a shared PDO connection. The file is
+ * protected from direct HTTP access by api/.htaccess.
  *
  * @return PDO
  */
@@ -20,14 +18,20 @@ function get_db()
         return $pdo;
     }
 
-    $configPath = __DIR__ . '/config.php';
+    $configPath = __DIR__ . '/.config.json';
     if (!file_exists($configPath)) {
         http_response_code(500);
-        echo json_encode(['error' => 'Missing api/config.php - copy config.example.php and fill in DB credentials.']);
+        echo json_encode(['error' => 'Missing api/.config.json - copy .config.example.json and fill in DB credentials.']);
         exit();
     }
 
-    $config = require $configPath;
+    $config = json_decode(file_get_contents($configPath), true);
+    if (!is_array($config) || !isset($config['db'])) {
+        log_error('api/.config.json is not valid JSON or has no "db" section');
+        http_response_code(500);
+        echo json_encode(['error' => 'Invalid api/.config.json']);
+        exit();
+    }
     $config = $config['db'];
 
     $dsn = "mysql:host={$config['host']};dbname={$config['name']};charset=utf8mb4";

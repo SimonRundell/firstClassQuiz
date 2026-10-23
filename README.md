@@ -54,11 +54,9 @@ Vite serving the React frontend on its own dev port.
    mysql -u <user> -p <database_name> < schema.sql
    ```
 
-2. **API config** - copy `api/config.example.php` to `api/config.php` and
-   fill in your database host/name/user/pass. `api/config.php` is
-   git-ignored. It's a `.php` file rather than `.json` on purpose: a direct
-   HTTP request to it executes as PHP and returns nothing, instead of the
-   web server handing back the raw credentials as static text.
+2. **API config** - copy `api/.config.example.json` to `api/.config.json`
+   and fill in your database host/name/user/pass. `api/.config.json` is
+   git-ignored and blocked from direct HTTP access by `api/.htaccess`.
 
 3. **Seed the first admin account** (there is no public signup):
 
